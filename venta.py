@@ -1,7 +1,9 @@
 from textwrap import fill
 from tkinter import *
 from tkinter import ttk
+from tkinter.tix import ComboBox
 from jsonManager import JsonManager 
+from caja import Caja
 import locale
 locale.setlocale(locale.LC_ALL, 'es_AR.UTF-8')  # Configura la localización a español
 
@@ -39,21 +41,21 @@ class VentaFrame(Frame):
         self.lbl_warn.pack(side='top')
         lbl_producto = Label(add_frame,text="Producto:",font=('Arial',15))
         lbl_producto.pack(side='top')
-        self.entry_producto = Entry(add_frame,font=('Arial',15))
-        self.entry_producto.pack(side='top')
-        self.entry_producto.bind('<Return>', lambda event: self.check_values(self.entry_producto.get(), self.entry_codigo.get()))
+        self.combobox_product = ttk.Combobox(add_frame, values=[articulo['nombre'] for articulo in self.articulos], font=('Arial',15))
+        self.combobox_product.pack(side='top')
+        self.combobox_product.bind('<Return>', lambda event: self.check_values(self.combobox_product.get(), self.entry_codigo.get()))
         lbl_codigo = Label(add_frame,text="Código:",font=('Arial',15))
         lbl_codigo.pack(side='top')
         self.entry_codigo = Entry(add_frame,font=('Arial',15))
         self.entry_codigo.pack(side='top')
-        self.entry_codigo.bind('<Return>', lambda event: self.check_values(self.entry_producto.get(), self.entry_codigo.get()))
+        self.entry_codigo.bind('<Return>', lambda event: self.check_values(self.combobox_product.get(), self.entry_codigo.get()))
         lbl_cantidad = Label(add_frame,text="Cantidad:",font=('Arial',15))
         lbl_cantidad.pack(side='top')
         self.entry_cantidad = Entry(add_frame,font=('Arial',15))
         self.entry_cantidad.insert(0,'1')
-        self.entry_cantidad.bind('<Return>', lambda event: self.check_values(self.entry_producto.get(), self.entry_codigo.get()))
+        self.entry_cantidad.bind('<Return>', lambda event: self.check_values(self.combobox_product.get(), self.entry_codigo.get()))
         self.entry_cantidad.pack(side='top')
-        btn_add = Button(add_frame, text="Agregar", font=('Arial',15), command=lambda: self.check_values(self.entry_producto.get(), self.entry_codigo.get()))
+        btn_add = Button(add_frame, text="Agregar", font=('Arial',15), command=lambda: self.check_values(self.combobox_product.get(), self.entry_codigo.get()))
         
         btn_add.pack(side='top')
         btn_remove = Button(add_frame, text="Eliminar", font=('Arial',15), command=self.remove_article)
@@ -61,11 +63,16 @@ class VentaFrame(Frame):
         self.checkout_btn = Button(add_frame, text="Finalizar Compra", font=('Arial',15), command=self.finalizar_compra)
         self.checkout_btn.pack(side='top')
 
+        self.metodo_pago = ttk.Combobox(add_frame, values=["Efectivo", "Tarjeta", "Transferencia"])
+        self.metodo_pago.set("Transferencia")  # Valor por defecto
+        self.metodo_pago.pack(side='top')
+
         total_frame = Frame(add_frame,relief='sunken', bd=5)
         total_frame.place(x=0,y=400,width=500,height=100)
         self.lbl_number = Label(total_frame,text='$0',font=('Consolas',30), fg='green')
         self.lbl_number.pack(side='bottom')
-
+        lbl_tabla = Label(tabla_frame,text="Articulos a vender",font=('Arial',20))
+        lbl_tabla.pack(side='top')
         columns = ('id', 'Producto', 'Cantidad', 'Costo', 'Codigo')
         self.productos_agregados = ttk.Treeview(tabla_frame, columns=columns, show='headings')
         for col in columns:
@@ -80,10 +87,21 @@ class VentaFrame(Frame):
         if not self.productos_agregados.get_children():
             self.lbl_warn.config(text="No hay artículos en la tabla.")
             return
-
+        if self.metodo_pago.get() not in ["Efectivo", "Tarjeta", "Transferencia"]:
+            self.lbl_warn.config(text="Selecciona un metodo de pago.")
+            return
+        if self.metodo_pago.get() == 'Efectivo':
+            Caja.ganancias_efectivo += self.update_total()
+        else:
+            Caja.ganancias_transferencia += self.update_total()
         # Restar cantidades en self.articulos según lo que haya en la tabla
         for child in self.productos_agregados.get_children():
             values = self.productos_agregados.item(child, 'values')
+            Caja.productos_vendidos.append({
+                'nombre': values[1],
+                'cantidad': int(values[2]),
+                'codigo': values[4]
+            })
             try:
                 pid = int(values[0])
                 qty = int(values[2])
@@ -114,6 +132,7 @@ class VentaFrame(Frame):
         # Guardar cambios en el JSON
         try:
             self.json_manager.save(self.articulos)
+
         except Exception as e:
             self.lbl_warn.config(text=f"Error al guardar inventario: {e}")
             return
@@ -153,12 +172,10 @@ class VentaFrame(Frame):
             values = self.productos_agregados.item(child, 'values')
             total += float(values[3]) * int(values[2])
 
-        self.lbl_number.config(text=locale.currency(total, grouping=True, international=True,symbol=False))
+        self.lbl_number.config(text=locale.currency(total, grouping=True, international=True,symbol=True))
+        return total
 
     def check_stock(self, product, add_qty):
-        """
-        Devuelve True si (cantidad en inventario) >= (cantidad ya en la tabla + add_qty).
-        """
         if not product:
             self.lbl_warn.config(text="Producto no encontrado en inventario.")
             return False

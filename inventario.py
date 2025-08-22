@@ -11,6 +11,9 @@ class Articulos:
         self.json_manager = JsonManager(filename)
         self.articulos = self.json_manager.load()
 
+    def load(self):
+        self.articulos = self.json_manager.load()
+
     def add(self, articulo: dict):
         articulo["id"] = self._next_id()
         self.articulos.append(articulo)
@@ -50,6 +53,7 @@ class InventarioFrame(Frame):
         return "Inventario"
 
     def contenido(self):
+        articulos_instance.load()
         Label(self, text="INVENTARIO", font=('Consolas', 20, 'bold')).pack(side='top')
 
         # Frames

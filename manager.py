@@ -1,7 +1,7 @@
 from tkinter import *
 from venta import VentaFrame
 from inventario import InventarioFrame
-
+from caja import Caja
 BACK = "#CACACA"
 
 
@@ -21,6 +21,7 @@ class Manager(Tk):
         Label(self.container, text="CAJA REGISTRADORA", font=('Arial', 24, 'bold'), bg=BACK).pack(side='top')
         Button(self.container, text="Ventas", command=lambda: self.open_window(VentaFrame), bg="#006AC7").place(x=200, y=200, width=200, height=50)
         Button(self.container, text="Inventario", command=lambda: self.open_window(InventarioFrame), bg="#10741D").place(x=400, y=200, width=200, height=50)
+        Button(self.container,text='Hacer Caja',bg="#743510", command=Caja.hacer_caja).place(x=300,y=250,width=200,height=50)
 
     def open_window(self, FrameClass):
         if self.current_toplevel:
