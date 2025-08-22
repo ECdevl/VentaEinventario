@@ -2,6 +2,7 @@ from tkinter import *
 from venta import VentaFrame
 from inventario import InventarioFrame
 from caja import Caja
+
 BACK = "#CACACA"
 
 

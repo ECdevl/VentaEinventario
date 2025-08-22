@@ -17,8 +17,7 @@ class VentaFrame(Frame):
         
 
         self.articulos = []
-        self.json_manager = JsonManager("inventario.json")
-        self.articulos=self.json_manager.load()
+        self.articulos=JsonManager().load()
         self.contenido()
         
 
@@ -131,7 +130,7 @@ class VentaFrame(Frame):
 
         # Guardar cambios en el JSON
         try:
-            self.json_manager.save(self.articulos)
+            JsonManager().save(self.articulos)
 
         except Exception as e:
             self.lbl_warn.config(text=f"Error al guardar inventario: {e}")

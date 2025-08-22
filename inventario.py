@@ -8,11 +8,10 @@ from jsonManager import JsonManager
 
 class Articulos:
     def __init__(self, filename="inventario.json"):
-        self.json_manager = JsonManager(filename)
-        self.articulos = self.json_manager.load()
+        self.articulos = JsonManager().load()
 
     def load(self):
-        self.articulos = self.json_manager.load()
+        self.articulos = JsonManager().load()
 
     def add(self, articulo: dict):
         articulo["id"] = self._next_id()
@@ -31,7 +30,7 @@ class Articulos:
         return self.articulos
 
     def save(self):
-        self.json_manager.save(self.articulos)
+        JsonManager().save(self.articulos)
 
     def _next_id(self):
         if not self.articulos:
