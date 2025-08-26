@@ -1,3 +1,4 @@
+#Esta clase se refiere a toda la seccion del inventario 
 import datetime
 from tkinter import *
 from tkinter import ttk
@@ -5,7 +6,8 @@ import tkcalendar
 from textwrap import fill
 from jsonManager import JsonManager
 
-
+#Esta clase retiene la lista de articulos disponibles (sacados del json) los cuales son luegos representados
+#en la clase principal de InventarioFrame
 class Articulos:
     def __init__(self, filename="inventario.json"):
         self.articulos = JsonManager().load()
@@ -78,9 +80,13 @@ class InventarioFrame(Frame):
 
         # Entradas
         self.entry_producto = self._create_entry(products_frame, "Producto")
+        self.entry_producto.bind("<Return>", lambda event: self.entry_cantidad.focus())
         self.entry_cantidad = self._create_entry(products_frame, "Cantidad")
+        self.entry_cantidad.bind("<Return>", lambda event: self.entry_costo.focus())
         self.entry_costo = self._create_entry(products_frame, "Costo")
+        self.entry_costo.bind("<Return>", lambda event: self.entry_codigo.focus())
         self.entry_codigo = self._create_entry(products_frame, "Codigo")
+        self.entry_codigo.bind("<Return>", lambda event: self.add_article())
 
         Button(products_frame, text="Agregar", command=self.add_article, bg='green').pack(side="top", pady=2)
         Button(products_frame, text="Eliminar", command=self.delete_article, bg='red').pack(side="top", pady=2)
@@ -96,6 +102,7 @@ class InventarioFrame(Frame):
         entry.pack(side="top")
         return entry
 
+    #agregar articulo a la tabla
     def add_article(self):
         nombre = self.entry_producto.get().strip()
         cantidad = self.entry_cantidad.get().strip()
@@ -118,6 +125,7 @@ class InventarioFrame(Frame):
         self.load_articles()
         self.info_label.config(text="Artículo agregado", fg="green")
 
+    #eliminar articulo de la tabla
     def delete_article(self):
         selected = self.table.selection()
         if not selected:
@@ -128,7 +136,7 @@ class InventarioFrame(Frame):
         articulos_instance.delete_by_ids(ids)
         self.load_articles()
         self.info_label.config(text="Eliminado con éxito", fg="green")
-
+    #editar algun articulo
     def edit_article(self):
         selected = self.table.selection()
         if not selected:
@@ -217,6 +225,7 @@ class InventarioFrame(Frame):
         Button(btn_frame, text="Guardar", command=guardar_edicion, bg='green').pack(side='left', expand=True, fill='both')
         Button(btn_frame, text="Cancelar", command=win.destroy, bg='gray').pack(side='right', expand=True, fill='both')
 
+    #recargar la lista de articulos cada vez que se ejecuta
     def load_articles(self):
 
         for row in self.table.get_children():

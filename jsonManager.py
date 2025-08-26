@@ -1,5 +1,9 @@
+#Esta clase se usa puramente para poder administrar los json
+# tiene metodos para gurdar y cargar datos, se usan como metodos de clase para que sea mas eficaz y economico
+#en cuanto a codigo
 import json
-from tkinter import Tk, Toplevel, Label
+from tkinter import Tk, Toplevel, Label, messagebox
+from tkinter import ttk
 from textwrap import fill
 
 class JsonManager:
@@ -15,10 +19,10 @@ class JsonManager:
         except FileNotFoundError:
             with open(cls.filename, "w", encoding="utf-8") as f:
                 json.dump([], f)
-            JsonWarn("El archivo de inventario no existe. Se ha creado uno nuevo.\nNo lo elimine.")
+            messagebox.showwarning(title="Advertencia", message="El archivo de inventario no existe. Se ha creado uno nuevo.\nNo lo elimine.")
             return []
         except json.JSONDecodeError:
-            JsonWarn("El archivo está corrupto. Se reinició vacío.")
+            messagebox.showwarning(title="Advertencia", message="El archivo está corrupto. Se reinició vacío.")
             return []
 
     @classmethod
@@ -26,19 +30,6 @@ class JsonManager:
         with open(cls.filename, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
 
-class JsonWarn(Toplevel):
-    def __init__(cls,msg):
-        super().__init__()
-        cls.title("Advertencia")
-        cls.geometry("100x200")
 
-        cls.init_ui(msg)
-
-    def init_ui(cls,msg):
-        cls.create_widgets(msg)
-
-    def create_widgets(cls,msg):
-        lbl_titulo = Label(cls, text=fill(msg, width=35), font=('Arial', 24, 'bold'))
-        lbl_titulo.pack(side='top', pady=10)
 
 

@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "nombre": "Fanta 500ml",
+        "cantidad": 29,
+        "costo": "82394",
+        "codigo": "997543",
+        "id": 1
+    },
+    {
+        "nombre": "Coca cola 500ml",
+        "cantidad": 90,
+        "costo": "5500",
+        "codigo": "997543",
+        "id": 2
+    }
+]

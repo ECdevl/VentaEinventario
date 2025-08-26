@@ -1,3 +1,4 @@
+#En esta clase es donde empieza el programa y se usa para acceder a los demas modulos
 from tkinter import *
 from venta import VentaFrame
 from inventario import InventarioFrame
@@ -8,6 +9,7 @@ BACK = "#CACACA"
 
 class Manager(Tk):
     def __init__(self):
+        #se inicializa y se configura la ventana principal
         super().__init__()
         self.title("Caja registradora")
         self.geometry("800x400+150+250")
@@ -24,7 +26,10 @@ class Manager(Tk):
         Button(self.container, text="Inventario", command=lambda: self.open_window(InventarioFrame), bg="#10741D").place(x=400, y=200, width=200, height=50)
         Button(self.container,text='Hacer Caja',bg="#743510", command=Caja.hacer_caja).place(x=300,y=250,width=200,height=50)
 
+    # Esta funcion crea un ToplLevel para poder abrir una ventana nueva del modulo al que se desea entrar
+    
     def open_window(self, FrameClass):
+        # Se asegura que haya solo una ventana abierta para evitar errores por duplicacion
         if self.current_toplevel:
             self.current_toplevel.destroy()
 
@@ -37,6 +42,7 @@ class Manager(Tk):
         self.current_toplevel = ventana
 
 
+#Inicia el mainloop de TTK
 def main():
     app = Manager()
     app.mainloop()

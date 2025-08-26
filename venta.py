@@ -1,3 +1,4 @@
+#Este modulo se encarga de la parte de ventas para poder vender los productos del inventario
 from textwrap import fill
 from tkinter import *
 from tkinter import ttk
@@ -26,7 +27,7 @@ class VentaFrame(Frame):
     def __str__(self):
         return "Ventas"
     def contenido(self):
-        
+        #configuracion de ventana
         self.config(bg="#CACACA")
         titulo = Label(self,text="VENTAS",font=('Consolas',20,'bold'))
         titulo.pack(side='top')
@@ -34,7 +35,7 @@ class VentaFrame(Frame):
         tabla_frame = Frame(self)
         add_frame.place(x=0,y=0,width=500,height=500)
         tabla_frame.place(x=500,y=0,width=500,height=500)
-        
+        #estructura
 
         self.lbl_warn = Label(add_frame,text='',font=('Arial',12),fg='red')
         self.lbl_warn.pack(side='top')
@@ -72,6 +73,7 @@ class VentaFrame(Frame):
         self.lbl_number.pack(side='bottom')
         lbl_tabla = Label(tabla_frame,text="Articulos a vender",font=('Arial',20))
         lbl_tabla.pack(side='top')
+        #columnas y tabla que muestra los articulos en el carrito de compras
         columns = ('id', 'Producto', 'Cantidad', 'Costo', 'Codigo')
         self.productos_agregados = ttk.Treeview(tabla_frame, columns=columns, show='headings')
         for col in columns:
@@ -82,6 +84,7 @@ class VentaFrame(Frame):
                 self.productos_agregados.column(col, width=100)
         self.productos_agregados.pack(side='top', fill='both', expand=True)
 
+    #se debe eleguir un metodo de pago para el registro en la caja
     def finalizar_compra(self):
         if not self.productos_agregados.get_children():
             self.lbl_warn.config(text="No hay artículos en la tabla.")
@@ -143,7 +146,7 @@ class VentaFrame(Frame):
 
         self.lbl_warn.config(text="Compra finalizada con éxito.")
 
-
+    #Quitar articulo del carrito
     def remove_article(self):
         selected_item = self.productos_agregados.selection()
         if not selected_item:
@@ -154,7 +157,8 @@ class VentaFrame(Frame):
             self.productos_agregados.delete(item)
 
         self.update_total()
-
+    #Revisar que el usuario haya introducido un producto o codigo valido
+    #(Inutil debido a que ahora se usa un ComboBox para agregar productos)
     def check_values(self,product,code):
         if not product and not code:
             self.lbl_warn.config(text=fill("Por favor, introduce almenos un nombre o codigo de barras."))
@@ -164,7 +168,8 @@ class VentaFrame(Frame):
             self.load_specific_article(product)
         else:
             self.load_specific_article(code)
-
+    #Actualizar el total del precio
+    #se usa locale para poder incluir un precio mas preciso en monedas
     def update_total(self):
         total = 0
         for child in self.productos_agregados.get_children():
@@ -174,6 +179,8 @@ class VentaFrame(Frame):
         self.lbl_number.config(text=locale.currency(total, grouping=True, international=True,symbol=True))
         return total
 
+    #Revisa el stock para ver si el producto que se introdujo esta disponible
+    #(Otra vez inutil debido a que se usa un ComboBox para los productos)
     def check_stock(self, product, add_qty):
         if not product:
             self.lbl_warn.config(text="Producto no encontrado en inventario.")
@@ -210,7 +217,7 @@ class VentaFrame(Frame):
 
         return True
 
-
+    #Cargar un articulo especifico
     def load_specific_article(self, article):
         producto = None
         for i in self.articulos:

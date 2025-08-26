@@ -1,10 +1,14 @@
+#clase de caja
 import datetime
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 import locale
 
 locale.setlocale(locale.LC_ALL, 'es_AR.UTF-8')
-
+#Toma las ganancias de transferencia y efectivo de la clase VentasFrame
+#luego las muestra en un documento.txt con la fecha y hora actual
+#junto al total de ganancias y los productos que se vendieron
 class Caja:
     ganancias_transferencia = 0
     ganancias_efectivo = 0
@@ -23,7 +27,7 @@ class Caja:
             file.write("Productos vendidos:\n")
             for producto in cls.productos_vendidos:
                 file.write(f" - {producto['nombre']} ({producto['codigo']}): {producto['cantidad']} unidades\n")
-            CajaWindow()
+            messagebox.showinfo("Reporte de Caja", f"Registro de caja guardado correctamente como: {file.name}", icon='info')
 
 
         # Reiniciar valores
@@ -31,22 +35,5 @@ class Caja:
         cls.ganancias_efectivo = 0
         cls.productos_vendidos = []
 
-class CajaWindow(Toplevel):
-    def __init__(self):
-        super().__init__()
-        self.title("Reporte")
-        self.geometry("500x200")
-
-        self.init_ui()
-
-    def init_ui(self):
-        self.create_widgets()
-
-    def create_widgets(self):
-        lbl_titulo = Label(self, text="Reporte de Caja", font=('Arial', 24, 'bold'))
-        lbl_titulo.pack(side='top', pady=10)
-
-        self.lbl = Label(self, text="Registro de caja guardado correctamente", font=('Arial', 18))
-        self.lbl.pack(side='top', pady=10)
 
 
